@@ -24,7 +24,7 @@ Dizem que, no coração do castelo, reside um inimigo sombrio, cuja derrota puri
 
 ---
 
-## 🏛️ Estrutura do Jogo (Mapa)
+## 🏛️ Estrutura do Jogo (Árvore de Caminhos)
 Cada parte do castelo representa um **nível**, com diferentes desafios e inimigos. O jogador precisa coletar itens-chave para acessar novas áreas e avançar na narrativa.
 
 ### 🔑 Níveis Principais
