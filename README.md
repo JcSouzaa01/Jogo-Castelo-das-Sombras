@@ -2,6 +2,10 @@
 
 ## 👨‍💻 Desenvolvedores
 - **Charles - Dev**
+- **Esdras - Dev**
+- **Rafael - Dev**
+- **Douglas - Dev**
+- **lucas - Dev**
 
 ## 📚 Plataforma de Desenvolvimento
 - **Engine:** Unity
