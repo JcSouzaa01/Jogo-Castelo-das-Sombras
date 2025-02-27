@@ -2,17 +2,27 @@ using UnityEngine;
 
 public class SlimeController : MonoBehaviour
 {
+
     public float _moveSpeedSlime = 3.5f;
     private Vector2 _slimeDirection;
     private Rigidbody2D _slimeRB2D;
     public DetectionController _detectionaArea;
     private SpriteRenderer _spriteRenderer;
-    public int damage = 10; // Dano do inimigo
 
+    public int health = 50; 
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _slimeRB2D = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        _slimeDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
     }
 
     void FixedUpdate()
@@ -38,9 +48,22 @@ public class SlimeController : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             Vector2 knockbackDirection = (collision.transform.position - transform.position).normalized;
-            GameManager.instance.PlayerTakeDamage(10, knockbackDirection); //passa a direção corretamente
+            GameManager.instance.PlayerTakeDamage(10, knockbackDirection); // Agora passa a direção corretamente
         }
     }
 
+     public void TakeDamage(int damage)
+    {
+        health -= damage; // Subtrai o dano da vida do inimigo
+        if (health <= 0)
+        {
+            Die(); // Mata o inimigo
+        }
+    }
 
+    private void Die()
+    {
+        Debug.Log("Slime morreu!");
+        Destroy(gameObject); // Remove o inimigo da cena
+    }
 }
