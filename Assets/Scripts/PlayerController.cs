@@ -24,11 +24,27 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+
+        //Flip();
+
+        OnAttack();
+
+        
+    }
+
+    void FixedUpdate() 
+    {
         _playerDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
         // Controla a animação de idle e walk
-        if (_playerDirection.sqrMagnitude > 0) 
+        if (_playerDirection.sqrMagnitude > 0.1) 
         {
+            MovePlayer();
+
+            _playerAnimator.SetFloat("AxisX", _playerDirection.x);
+            _playerAnimator.SetFloat("AxisY", _playerDirection.y);
+
             _playerAnimator.SetInteger("Movimento", 1);
         }
         else
@@ -36,17 +52,14 @@ public class PlayerController : MonoBehaviour
             _playerAnimator.SetInteger("Movimento", 0);
         }
 
-        Flip();
-
-        OnAttack();
-
         if (_isAttack) //Verdadeira
         {
             _playerAnimator.SetInteger("Movimento", 2);
         }
     }
 
-    void FixedUpdate() {
+    void MovePlayer()
+    {
         _playerRigidbody2D.MovePosition(_playerRigidbody2D.position + _playerDirection.normalized * _playerSpeed * Time.fixedDeltaTime);
     }
 
