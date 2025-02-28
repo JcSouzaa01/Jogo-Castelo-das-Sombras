@@ -2,24 +2,23 @@ using UnityEngine;
 
 public class SlimeController : MonoBehaviour
 {
-
     public float _moveSpeedSlime = 3.5f;
     private Vector2 _slimeDirection;
     private Rigidbody2D _slimeRB2D;
     public DetectionController _detectionaArea;
     private SpriteRenderer _spriteRenderer;
 
-    public int health = 50; 
+    public int health = 50;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    // Efeito de morte (partícula)
+    public GameObject deathEffect;
+
     void Start()
     {
         _slimeRB2D = GetComponent<Rigidbody2D>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
-
     }
 
-    // Update is called once per frame
     void Update()
     {
         _slimeDirection = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
@@ -32,7 +31,7 @@ public class SlimeController : MonoBehaviour
             _slimeDirection = (_detectionaArea.detectedObjs[0].transform.position - transform.position).normalized;
             _slimeRB2D.MovePosition(_slimeRB2D.position + _slimeDirection * _moveSpeedSlime * Time.fixedDeltaTime);
 
-            if(_slimeDirection.x > 0)
+            if (_slimeDirection.x > 0)
             {
                 _spriteRenderer.flipX = false;
             }
@@ -48,22 +47,29 @@ public class SlimeController : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             Vector2 knockbackDirection = (collision.transform.position - transform.position).normalized;
-            GameManager.instance.PlayerTakeDamage(10, knockbackDirection); // Agora passa a direção corretamente
+            GameManager.instance.PlayerTakeDamage(10, knockbackDirection);
         }
     }
 
-     public void TakeDamage(int damage)
+    public void TakeDamage(int damage)
     {
-        health -= damage; // Subtrai o dano da vida do inimigo
+        health -= damage;
         if (health <= 0)
         {
-            Die(); // Mata o inimigo
+            Die();
         }
     }
 
     private void Die()
     {
         Debug.Log("Slime morreu!");
-        Destroy(gameObject); // Remove o inimigo da cena
+
+        // Instancia a partícula de morte, se houver
+        if (deathEffect != null)
+        {
+            Instantiate(deathEffect, transform.position, Quaternion.identity);
+        }
+
+        Destroy(gameObject);
     }
 }

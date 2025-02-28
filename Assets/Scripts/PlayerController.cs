@@ -89,16 +89,24 @@ public class PlayerController : MonoBehaviour
             _isAttack = true;
             _playerSpeed = 0f;
 
-            // Aplica dano se colidir com o inimigo durante o ataque
-            Collider2D[] hitEnemies = Physics2D.OverlapBoxAll(transform.position + (Vector3)attackDirection * attackLength / 2f, new Vector2(attackLength, attackWidth), 0f);
-            foreach (var enemy in hitEnemies)
+            // Aplica dano a inimigos e destrói objetos no alcance
+            Collider2D[] hitObjects = Physics2D.OverlapBoxAll(transform.position + (Vector3)attackDirection * attackLength / 2f, new Vector2(attackLength, attackWidth), 0f);
+            foreach (var obj in hitObjects)
             {
-                if (enemy.CompareTag("Enemy"))
+                if (obj.CompareTag("Enemy"))
                 {
-                    SlimeController slimeController = enemy.GetComponent<SlimeController>();
+                    SlimeController slimeController = obj.GetComponent<SlimeController>();
                     if (slimeController != null)
                     {
-                        slimeController.TakeDamage(playerDamage); // Aplica o dano no inimigo
+                        slimeController.TakeDamage(playerDamage);
+                    }
+                }
+                else if (obj.CompareTag("Destruido")) // Verifica se é um objeto destrutível
+                {
+                    Destructible destructible = obj.GetComponent<Destructible>();
+                    if (destructible != null)
+                    {
+                        destructible.DestroyObject();
                     }
                 }
             }
