@@ -6,6 +6,7 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
     public TextMeshProUGUI healthText;
     public HealthController playerHealth;
+    
 
     void Awake()
     {

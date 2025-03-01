@@ -21,6 +21,14 @@ public class PlayerController : MonoBehaviour
     private bool _canAttack = true;
     private bool _isAttacking = false;
 
+    [Header("Dash Settings")]
+    public float dashForce = 20f;          // Força do impulso
+    public float dashDuration = 0.15f;     // Tempo de duração do dash
+    public float dashCooldown = 0.4f;      // Tempo de espera entre os dashes
+    private bool _isDashing = false;
+    private bool _canDash = true;
+    private Vector2 _dashDirection;        // Direção específica para o dash
+
     void Start()
     {
         _playerRigidbody2D = GetComponent<Rigidbody2D>();
@@ -37,12 +45,14 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        
         HandleAttackInput();
+        HandleDashInput(); // Movido para Update para melhor resposta
     }
 
     void FixedUpdate()
     {
-        if (!_isAttacking)
+        if (!_isAttacking && !_isDashing)
         {
             HandleMovement();
             UpdateAttackDirection();
@@ -59,6 +69,51 @@ public class PlayerController : MonoBehaviour
             attackDirection = Vector2.up;
         else if (_playerDirection.y < 0)
             attackDirection = Vector2.down;
+    }
+
+    void HandleDashInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && _canDash && !_isAttacking)
+        {
+            // Captura a direção atual do input
+            Vector2 inputDirection = new Vector2(
+                Input.GetAxisRaw("Horizontal"),
+                Input.GetAxisRaw("Vertical")
+            );
+
+            // Usa a última direção de movimento se não houver input
+            _dashDirection = inputDirection != Vector2.zero ? 
+                            inputDirection.normalized : 
+                            _playerDirection.normalized;
+
+            StartCoroutine(PerformDash());
+        }
+    }
+
+     IEnumerator PerformDash()
+    {
+        _canDash = false;
+        _isDashing = true;
+        
+        // Salva valores originais
+        float originalSpeed = _playerSpeed;
+        Color originalColor = GetComponent<SpriteRenderer>().color;
+        
+        // Aplica dash
+        _playerRigidbody2D.linearVelocity = _dashDirection * dashForce;
+        GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0.6f);
+        
+        // Tempo de duração do dash
+        yield return new WaitForSeconds(dashDuration);
+        
+        // Restaura valores
+        _playerRigidbody2D.linearVelocity = Vector2.zero;
+        GetComponent<SpriteRenderer>().color = originalColor;
+        _isDashing = false;
+        
+        // Cooldown
+        yield return new WaitForSeconds(dashCooldown);
+        _canDash = true;
     }
 
     void HandleMovement()
